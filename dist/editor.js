@@ -23,27 +23,38 @@ class MarkdownWYSIWYG {
     constructor(elementId, options = {}) {
         this.hostElement = document.getElementById(elementId);
         if (!this.hostElement) {
-            throw new Error(`Elemento com ID '${elementId}' não encontrado.`);
+            throw new Error(`Element with ID '${elementId}' not found.`);
         }
         this.options = {
             initialValue: '',
             showToolbar: true,
             buttons: [
-                { id: 'heading', label: ICON_HEADING_MENU, title: 'Cabeçalhos', action: '_toggleHeadingMenu' },
-                { id: 'bold', label: ICON_BOLD, title: 'Negrito', execCommand: 'bold', type: 'inline', mdPrefix: '**', mdSuffix: '**' },
-                { id: 'italic', label: ICON_ITALIC, title: 'Itálico', execCommand: 'italic', type: 'inline', mdPrefix: '*', mdSuffix: '*' },
-                { id: 'strikethrough', label: ICON_STRIKETHROUGH, title: 'Riscado', execCommand: 'strikeThrough', type: 'inline', mdPrefix: '~~', mdSuffix: '~~' },
+                // Group 1: Headings
+                { id: 'heading', label: ICON_HEADING_MENU, title: 'Headings', action: '_toggleHeadingMenu' },
+                { id: 'separator' },
+                // Group 2: Inline Formatting
+                { id: 'bold', label: ICON_BOLD, title: 'Bold', execCommand: 'bold', type: 'inline', mdPrefix: '**', mdSuffix: '**' },
+                { id: 'italic', label: ICON_ITALIC, title: 'Italic', execCommand: 'italic', type: 'inline', mdPrefix: '*', mdSuffix: '*' },
+                { id: 'strikethrough', label: ICON_STRIKETHROUGH, title: 'Strikethrough', execCommand: 'strikeThrough', type: 'inline', mdPrefix: '~~', mdSuffix: '~~' },
+                { id: 'separator' },
+                // Group 3: Link & Code
                 { id: 'link', label: ICON_LINK, title: 'Link', action: '_insertLink', type: 'inline' },
-                { id: 'ul', label: ICON_UL, title: 'Lista não ordenada', execCommand: 'insertUnorderedList', type: 'block-list', mdPrefix: '- ' },
-                { id: 'ol', label: ICON_OL, title: 'Lista ordenada', execCommand: 'insertOrderedList', type: 'block-list', mdPrefix: '1. ' },
-                { id: 'outdent', label: ICON_OUTDENT, title: 'Diminuir Recuo', action: '_handleOutdent', type: 'list-format' },
-                { id: 'indent', label: ICON_INDENT, title: 'Aumentar Recuo', action: '_handleIndent', type: 'list-format' },
-                { id: 'blockquote', label: ICON_BLOCKQUOTE, title: 'Citação', execCommand: 'formatBlock', value: 'BLOCKQUOTE', type: 'block', mdPrefix: '> ' },
-                { id: 'hr', label: ICON_HR, title: 'Linha Horizontal', action: '_insertHorizontalRuleAction', type: 'block-insert' },
-                { id: 'image', label: ICON_IMAGE, title: 'Inserir Imagem', action: '_insertImageAction', type: 'block-insert' },
-                { id: 'table', label: ICON_TABLE, title: 'Inserir Tabela', action: '_insertTableAction', type: 'block-insert' },
-                { id: 'codeblock', label: ICON_CODEBLOCK, title: 'Bloco de Código', action: '_insertCodeBlock', type: 'block-wrap', mdPrefix: '```\n', mdSuffix: '\n```' },
-                { id: 'inlinecode', label: ICON_INLINECODE, title: 'Código em Linha', action: '_insertInlineCode', type: 'inline', mdPrefix: '`', mdSuffix: '`' }
+                { id: 'inlinecode', label: ICON_INLINECODE, title: 'Inline Code', action: '_insertInlineCode', type: 'inline', mdPrefix: '`', mdSuffix: '`' },
+                { id: 'codeblock', label: ICON_CODEBLOCK, title: 'Code Block', action: '_insertCodeBlock', type: 'block-wrap', mdPrefix: '```\n', mdSuffix: '\n```' },
+                { id: 'separator' },
+                // Group 4: Lists & Indentation
+                { id: 'ul', label: ICON_UL, title: 'Unordered List', execCommand: 'insertUnorderedList', type: 'block-list', mdPrefix: '- ' },
+                { id: 'ol', label: ICON_OL, title: 'Ordered List', execCommand: 'insertOrderedList', type: 'block-list', mdPrefix: '1. ' },
+                { id: 'outdent', label: ICON_OUTDENT, title: 'Outdent', action: '_handleOutdent', type: 'list-format' },
+                { id: 'indent', label: ICON_INDENT, title: 'Indent', action: '_handleIndent', type: 'list-format' },
+                { id: 'separator' },
+                // Group 5: Block Elements
+                { id: 'blockquote', label: ICON_BLOCKQUOTE, title: 'Blockquote', execCommand: 'formatBlock', value: 'BLOCKQUOTE', type: 'block', mdPrefix: '> ' },
+                { id: 'hr', label: ICON_HR, title: 'Horizontal Rule', action: '_insertHorizontalRuleAction', type: 'block-insert' },
+                { id: 'separator' },
+                // Group 6: Inserts
+                { id: 'image', label: ICON_IMAGE, title: 'Insert Image', action: '_insertImageAction', type: 'block-insert' },
+                { id: 'table', label: ICON_TABLE, title: 'Insert Table', action: '_insertTableAction', type: 'block-insert' },
             ],
             onUpdate: null,
             initialMode: 'wysiwyg',
@@ -123,12 +134,12 @@ class MarkdownWYSIWYG {
             }
         });
         const heading = document.createElement('h3');
-        heading.textContent = 'Inserir Imagem';
+        heading.textContent = 'Insert Image';
         heading.classList.add('md-image-dialog-heading');
         form.appendChild(heading);
         const urlLabel = document.createElement('label');
         urlLabel.htmlFor = 'md-image-url-input-' + this.editorWrapper.id;
-        urlLabel.textContent = 'URL da Imagem:';
+        urlLabel.textContent = 'Image URL:';
         urlLabel.classList.add('md-image-dialog-label');
         form.appendChild(urlLabel);
         this.imageUrlInput = document.createElement('input');
@@ -139,7 +150,7 @@ class MarkdownWYSIWYG {
         form.appendChild(this.imageUrlInput);
         const altLabel = document.createElement('label');
         altLabel.htmlFor = 'md-image-alt-input-' + this.editorWrapper.id;
-        altLabel.textContent = 'Texto Alternativo (Alt):';
+        altLabel.textContent = 'Alt Text:';
         altLabel.classList.add('md-image-dialog-label');
         form.appendChild(altLabel);
         this.imageAltInput = document.createElement('input');
@@ -151,7 +162,7 @@ class MarkdownWYSIWYG {
         footer.classList.add('md-image-dialog-footer');
         const cancelButton = document.createElement('button');
         cancelButton.type = 'button';
-        cancelButton.textContent = 'Cancelar';
+        cancelButton.textContent = 'Cancel';
         cancelButton.classList.add('md-image-dialog-button');
         cancelButton.addEventListener('click', () => {
             this.imageDialog.close();
@@ -159,7 +170,7 @@ class MarkdownWYSIWYG {
         footer.appendChild(cancelButton);
         const insertButton = document.createElement('button');
         insertButton.type = 'submit';
-        insertButton.textContent = 'Inserir';
+        insertButton.textContent = 'Insert';
         insertButton.classList.add('md-image-dialog-button', 'md-image-dialog-button-primary');
         footer.appendChild(insertButton);
         form.appendChild(footer);
@@ -282,10 +293,10 @@ class MarkdownWYSIWYG {
         this.contextualTableToolbar = document.createElement('div');
         this.contextualTableToolbar.classList.add('md-contextual-table-toolbar');
         const buttons = [
-            { id: 'insertRowAbove', label: ICON_TABLE_INSERT_ROW_ABOVE, title: 'Inserir Linha Acima', action: () => this._insertRowWysiwyg(true) },
-            { id: 'insertRowBelow', label: ICON_TABLE_INSERT_ROW_BELOW, title: 'Inserir Linha Abaixo', action: () => this._insertRowWysiwyg(false) },
-            { id: 'insertColLeft', label: ICON_TABLE_INSERT_COL_LEFT, title: 'Inserir Coluna à Esquerda', action: () => this._insertColumnWysiwyg(true) },
-            { id: 'insertColRight', label: ICON_TABLE_INSERT_COL_RIGHT, title: 'Inserir Coluna à Direita', action: () => this._insertColumnWysiwyg(false) },
+            { id: 'insertRowAbove', label: ICON_TABLE_INSERT_ROW_ABOVE, title: 'Insert Row Above', action: () => this._insertRowWysiwyg(true) },
+            { id: 'insertRowBelow', label: ICON_TABLE_INSERT_ROW_BELOW, title: 'Insert Row Below', action: () => this._insertRowWysiwyg(false) },
+            { id: 'insertColLeft', label: ICON_TABLE_INSERT_COL_LEFT, title: 'Insert Column Left', action: () => this._insertColumnWysiwyg(true) },
+            { id: 'insertColRight', label: ICON_TABLE_INSERT_COL_RIGHT, title: 'Insert Column Right', action: () => this._insertColumnWysiwyg(false) },
         ];
         buttons.forEach(btnConfig => {
             const button = document.createElement('button');
@@ -458,13 +469,13 @@ class MarkdownWYSIWYG {
         this.headingMenu.classList.add('md-heading-menu');
 
         const headingOptions = [
-            { label: 'Parágrafo', level: 0 },
-            { label: 'Cabeçalho 1', level: 1 },
-            { label: 'Cabeçalho 2', level: 2 },
-            { label: 'Cabeçalho 3', level: 3 },
-            { label: 'Cabeçalho 4', level: 4 },
-            { label: 'Cabeçalho 5', level: 5 },
-            { label: 'Cabeçalho 6', level: 6 },
+            { label: 'Paragraph', level: 0 },
+            { label: 'Heading 1', level: 1 },
+            { label: 'Heading 2', level: 2 },
+            { label: 'Heading 3', level: 3 },
+            { label: 'Heading 4', level: 4 },
+            { label: 'Heading 5', level: 5 },
+            { label: 'Heading 6', level: 6 },
         ];
 
         headingOptions.forEach(opt => {
@@ -481,7 +492,6 @@ class MarkdownWYSIWYG {
 
         this.editorWrapper.appendChild(this.headingMenu);
     }
-    // MODIFICADO: Lógica para restaurar seleção antes de aplicar o heading
     _applyHeading(level) {
         const tagName = `H${level}`;
         const mdPrefix = `${'#'.repeat(level)} `;
@@ -489,7 +499,6 @@ class MarkdownWYSIWYG {
         if (this.currentMode === 'wysiwyg') {
             this.editableArea.focus();
 
-            // ADICIONADO: Restaurar a seleção antes de executar o comando
             if (this.savedRangeInfo instanceof Range) {
                 const selection = window.getSelection();
                 selection.removeAllRanges();
@@ -498,7 +507,6 @@ class MarkdownWYSIWYG {
 
             document.execCommand('formatBlock', false, level > 0 ? tagName : 'P');
 
-            // ADICIONADO: Limpar a seleção salva após o uso
             this.savedRangeInfo = null;
 
             this._finalizeUpdate(this.editableArea.innerHTML);
@@ -536,11 +544,9 @@ class MarkdownWYSIWYG {
             this._finalizeUpdate(textarea.value);
         }
     }
-    // MODIFICADO: Adicionado salvamento da seleção ao abrir o menu
     _showHeadingMenu(buttonElement) {
         if (this.headingMenu.style.display === 'block') return;
 
-        // ADICIONADO: Salvar a seleção atual para restaurar depois
         if (this.currentMode === 'wysiwyg') {
             this.editableArea.focus();
             const selection = window.getSelection();
@@ -551,7 +557,6 @@ class MarkdownWYSIWYG {
             }
         }
 
-        // Update active item in menu
         const items = this.headingMenu.querySelectorAll('.md-heading-menu-item');
         items.forEach(item => item.classList.remove('active'));
 
@@ -607,12 +612,10 @@ class MarkdownWYSIWYG {
         document.addEventListener('click', this._boundListeners.closeHeadingMenuOnClickOutside, true);
         document.addEventListener('keydown', this._boundListeners.closeHeadingMenuOnEsc, true);
     }
-    // MODIFICADO: Limpar a seleção salva ao fechar o menu
     _hideHeadingMenu() {
         if (!this.headingMenu || this.headingMenu.style.display === 'none') return;
         this.headingMenu.style.display = 'none';
 
-        // ADICIONADO: Limpar a seleção salva ao fechar o menu
         this.savedRangeInfo = null;
 
         document.removeEventListener('click', this._boundListeners.closeHeadingMenuOnClickOutside, true);
@@ -782,23 +785,31 @@ class MarkdownWYSIWYG {
         if (this.options.onUpdate) this.options.onUpdate(this.getValue());
         this._updateToolbarActiveStates();
     }
+
     _createToolbar() {
         this.toolbar = document.createElement('div');
         this.toolbar.classList.add('md-toolbar');
         this.options.buttons.forEach(buttonConfig => {
-            const button = document.createElement('button');
-            button.type = 'button';
-            button.classList.add('md-toolbar-button', `md-toolbar-button-${buttonConfig.id}`);
-            button.innerHTML = buttonConfig.label;
-            button.title = buttonConfig.title;
-            button.dataset.buttonId = buttonConfig.id;
-            const listener = () => this._handleToolbarClick(buttonConfig, button);
-            button.addEventListener('click', listener);
-            this.toolbarButtonListeners.push({ button, listener });
-            this.toolbar.appendChild(button);
+            if (buttonConfig.id === 'separator') {
+                const separator = document.createElement('div');
+                separator.classList.add('md-toolbar-separator');
+                this.toolbar.appendChild(separator);
+            } else {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.classList.add('md-toolbar-button', `md-toolbar-button-${buttonConfig.id}`);
+                button.innerHTML = buttonConfig.label;
+                button.title = buttonConfig.title;
+                button.dataset.buttonId = buttonConfig.id;
+                const listener = () => this._handleToolbarClick(buttonConfig, button);
+                button.addEventListener('click', listener);
+                this.toolbarButtonListeners.push({ button, listener });
+                this.toolbar.appendChild(button);
+            }
         });
         this.editorWrapper.appendChild(this.toolbar);
     }
+
     _createEditorContentArea() {
         this.contentAreaContainer = document.createElement('div');
         this.contentAreaContainer.classList.add('md-editor-content-area');
@@ -916,6 +927,7 @@ class MarkdownWYSIWYG {
         if (indentButton) indentButton.disabled = true;
         if (outdentButton) outdentButton.disabled = true;
         this.options.buttons.forEach(btnConfig => {
+            if (btnConfig.id === 'separator') return; // Skip separators
             const buttonEl = this.toolbar.querySelector(`.md-toolbar-button-${btnConfig.id}`);
             if (!buttonEl || btnConfig.id === 'table' || btnConfig.id === 'image') return;
             let isActive = false;
@@ -1021,6 +1033,7 @@ class MarkdownWYSIWYG {
         if (indentButton) indentButton.disabled = true;
         if (outdentButton) outdentButton.disabled = true;
         this.options.buttons.forEach(btnConfig => {
+            if (btnConfig.id === 'separator') return; // Skip separators
             if (btnConfig.id === 'table' || btnConfig.id === 'image') return;
             const buttonEl = this.toolbar.querySelector(`.md-toolbar-button-${btnConfig.id}`);
             if (!buttonEl) return;
@@ -1424,18 +1437,20 @@ class MarkdownWYSIWYG {
                 if (index === 0) firstLineCharDiff = diff;
                 if (isNewTypeOl) olCounter++;
             } else {
+
+                const placeholderText = "List item";
                 const contentToUse = (contentAfterSpaces.trim() === "" && lines.length > 1 && (selectedTextOriginal.trim() !== "" || start !== end))
                     ? ""
-                    : (contentAfterSpaces.trim() === "" ? "Item de lista" : contentAfterSpaces);
+                    : (contentAfterSpaces.trim() === "" ? placeholderText : contentAfterSpaces);
                 newLine = leadingSpaces + newMarkerCurrentLine + contentToUse;
-                const diff = newMarkerCurrentLine.length + (contentToUse === "Item de lista" && contentAfterSpaces.trim() === "" ? "Item de lista".length - contentAfterSpaces.length : 0);
+                const diff = newMarkerCurrentLine.length + (contentToUse === placeholderText && contentAfterSpaces.trim() === "" ? placeholderText.length - contentAfterSpaces.length : 0);
                 charDiff += diff;
                 if (index === 0) firstLineCharDiff = diff;
-                if (contentAfterSpaces.trim() === "" && contentToUse === "Item de lista" && (selectedTextOriginal.trim() === "")) {
+                if (contentAfterSpaces.trim() === "" && contentToUse === placeholderText && (selectedTextOriginal.trim() === "")) {
                     this.pendingPlaceholderSelection = {
                         lineIndex: index,
                         startOffset: leadingSpaces.length + newMarkerCurrentLine.length,
-                        endOffset: leadingSpaces.length + newMarkerCurrentLine.length + "Item de lista".length
+                        endOffset: leadingSpaces.length + newMarkerCurrentLine.length + placeholderText.length
                     };
                 }
                 if (isNewTypeOl) olCounter++;
@@ -1502,7 +1517,7 @@ class MarkdownWYSIWYG {
             const hr = document.createElement('tr');
             for (let j = 0; j < cols; j++) {
                 const th = document.createElement('th');
-                th.innerHTML = `Cabeçalho ${j + 1}`;
+                th.innerHTML = `Header ${j + 1}`;
                 hr.appendChild(th);
             }
             thead.appendChild(hr);
@@ -1562,7 +1577,7 @@ class MarkdownWYSIWYG {
         if (rows >= 1) {
             mdTable += "|";
             for (let j = 0; j < cols; j++) {
-                const placeholder = ` Cabeçalho ${j + 1} `;
+                const placeholder = ` Header ${j + 1} `;
                 headerPlaceholders.push(placeholder.trim());
                 mdTable += placeholder + "|";
             }
@@ -1573,7 +1588,7 @@ class MarkdownWYSIWYG {
         }
         for (let i = 1; i < rows; i++) {
             mdTable += "|";
-            for (let j = 0; j < cols; j++) mdTable += " Célula |";
+            for (let j = 0; j < cols; j++) mdTable += " Cell |";
             mdTable += "\n";
         }
         const textValue = textarea.value;
@@ -1785,26 +1800,27 @@ class MarkdownWYSIWYG {
         let placeholder = '';
         let cursorOffsetStart = prefix.length;
         let cursorOffsetEnd = prefix.length + (selectedText.length > 0 ? selectedText.length : 0);
+
         switch (buttonConfig.id) {
-            case 'h1': placeholder = 'Cabeçalho 1'; break;
-            case 'h2': placeholder = 'Cabeçalho 2'; break;
-            case 'h3': placeholder = 'Cabeçalho 3'; break;
-            case 'bold': placeholder = 'negrito'; break;
-            case 'italic': placeholder = 'itálico'; break;
-            case 'strikethrough': placeholder = 'riscado'; break;
+            case 'h1': placeholder = 'Heading 1'; break;
+            case 'h2': placeholder = 'Heading 2'; break;
+            case 'h3': placeholder = 'Heading 3'; break;
+            case 'bold': placeholder = 'bold text'; break;
+            case 'italic': placeholder = 'italic text'; break;
+            case 'strikethrough': placeholder = 'strikethrough text'; break;
             case 'link':
-                const url = prompt("Insira a URL do link:", "https://");
+                const url = prompt("Enter link URL:", "https://");
                 if (!url) return;
                 prefix = '[';
                 suffix = `](${url})`;
-                placeholder = selectedText || 'texto do link';
+                placeholder = selectedText || 'link text';
                 cursorOffsetStart = 1;
                 cursorOffsetEnd = cursorOffsetStart + placeholder.length;
                 selectedText = placeholder;
                 break;
             case 'ul':
             case 'ol':
-                placeholder = 'Item de lista';
+                placeholder = 'List item';
                 if (selectedText.includes('\n')) {
                     let count = 1;
                     replacementText = selectedText.split('\n').map(line => {
@@ -1825,7 +1841,7 @@ class MarkdownWYSIWYG {
                 }
                 break;
             case 'blockquote':
-                placeholder = 'Citação';
+                placeholder = 'Quote';
                 if (selectedText.includes('\n')) {
                     replacementText = selectedText.split('\n').map(line => `> ${line}`).join('\n');
                     cursorOffsetStart = 0;
@@ -1844,7 +1860,7 @@ class MarkdownWYSIWYG {
             case 'codeblock':
                 prefix = '```\n';
                 suffix = '\n```';
-                placeholder = 'código';
+                placeholder = 'code';
                 if (start > 0 && textarea.value[start - 1] !== '\n') prefix = '\n' + prefix;
                 if (end < textarea.value.length && textarea.value[end] !== '\n' && (selectedText || placeholder).slice(-1) !== '\n') suffix = suffix + '\n';
                 else if ((selectedText || placeholder).slice(-1) === '\n' && textarea.value[end] !== '\n' && end < textarea.value.length) {
@@ -1852,7 +1868,7 @@ class MarkdownWYSIWYG {
                 }
                 cursorOffsetStart = prefix.length;
                 break;
-            case 'inlinecode': placeholder = 'código'; break;
+            case 'inlinecode': placeholder = 'code'; break;
             default: return;
         }
         if (!replacementText) {
@@ -1882,11 +1898,11 @@ class MarkdownWYSIWYG {
             this.editableArea.focus();
             const selection = window.getSelection();
             const currentText = selection.toString();
-            const url = prompt("Insira a URL do link:", "https://");
+            const url = prompt("Enter link URL:", "https://");
             if (url) {
                 if (!currentText && selection.rangeCount > 0) {
                     const range = selection.getRangeAt(0);
-                    const linkTextNode = document.createTextNode("texto do link");
+                    const linkTextNode = document.createTextNode("link text");
                     range.deleteContents();
                     range.insertNode(linkTextNode);
                     range.selectNodeContents(linkTextNode);
@@ -1963,7 +1979,7 @@ class MarkdownWYSIWYG {
             const initialSelectedText = selection.toString();
             const pre = document.createElement('pre');
             const code = document.createElement('code');
-            code.textContent = initialSelectedText || "código";
+            code.textContent = initialSelectedText || "code";
             pre.appendChild(code);
             if (selection && selection.rangeCount > 0) {
                 const range = selection.getRangeAt(0);
@@ -2000,7 +2016,7 @@ class MarkdownWYSIWYG {
             const selection = window.getSelection();
             const initialSelectedText = selection.toString().trim();
             const code = document.createElement('code');
-            code.textContent = initialSelectedText || "código";
+            code.textContent = initialSelectedText || "code";
             if (selection && selection.rangeCount > 0) {
                 const range = selection.getRangeAt(0);
                 range.deleteContents();
