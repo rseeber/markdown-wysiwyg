@@ -96,11 +96,12 @@ class MarkdownWYSIWYG {
         this._boundListeners.handleDragLeave = this._handleDragLeave.bind(this);
         this._boundListeners.handleDrop = this._handleDrop.bind(this);
         this.toolbarButtonListeners = [];
+        this._createTopbar();
         if (this.options.showToolbar) {
             this._createToolbar();
         }
-        this._createEditorContentArea();
         this._createTabs();
+        this._createEditorContentArea();
         this._createHeadingMenu();
         this._createTableGridSelector();
         this._createContextualTableToolbar();
@@ -786,6 +787,12 @@ class MarkdownWYSIWYG {
         this._updateToolbarActiveStates();
     }
 
+    _createTopbar(){
+        this.topbar = document.createElement('div');
+        this.topbar.classList.add('md-topbar');
+        this.editorWrapper.appendChild(this.topbar);
+    }
+
     _createToolbar() {
         this.toolbar = document.createElement('div');
         this.toolbar.classList.add('md-toolbar');
@@ -807,7 +814,7 @@ class MarkdownWYSIWYG {
                 this.toolbar.appendChild(button);
             }
         });
-        this.editorWrapper.appendChild(this.toolbar);
+        this.topbar.appendChild(this.toolbar);
     }
 
     _createEditorContentArea() {
@@ -845,9 +852,13 @@ class MarkdownWYSIWYG {
         this.markdownTabButton = document.createElement('button');
         this.markdownTabButton.classList.add('md-tab-button');
         this.markdownTabButton.textContent = 'Markdown';
+        // hides the markdown button
+        this.markdownTabButton.style = "display: none;";
         this.markdownTabButton.addEventListener('click', this._boundListeners.onMarkdownTabClick);
         this.tabsContainer.appendChild(this.markdownTabButton);
-        this.editorWrapper.appendChild(this.tabsContainer);
+        // hides all tabs
+        this.tabsContainer.style = "display: none;";
+        this.topbar.appendChild(this.tabsContainer);
     }
     switchToMode(mode, isInitialSetup = false) {
         if (this.currentMode === mode && !isInitialSetup) return;
@@ -873,7 +884,7 @@ class MarkdownWYSIWYG {
             this.markdownEditorContainer.style.display = 'flex';
             this.markdownTabButton.classList.add('active');
             this.wysiwygTabButton.classList.remove('active');
-            this.markdownArea.focus();
+            //this.markdownArea.focus();
             this._updateMarkdownLineNumbers();
         }
         const currentEditorContent = (mode === 'wysiwyg') ? this.editableArea.innerHTML : this.markdownArea.value;

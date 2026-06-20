@@ -1,11 +1,16 @@
 .md-wysiwyg-editor-wrapper {
-    border: 1px solid #ddd;
     border-radius: 8px;
-    background-color: #fff;
-    overflow: hidden;
+    /* overflow: hidden; */
     display: flex;
     flex-direction: column;
     position: relative;
+}
+
+.md-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    border: 1px solid #ddd;
 }
 
 .md-toolbar {
@@ -54,7 +59,6 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    height: 500px;
 }
 
 .md-editable-area {
@@ -63,141 +67,11 @@
     padding: 15px;
     outline: none;
     word-wrap: break-word;
-    font-size: 15px;
-    line-height: 1.7;
     width: 100%;
     box-sizing: border-box;
     border: none;
-    background-color: #fff;
 }
 
-.md-editable-area h1 {
-    font-size: 2em;
-    font-weight: bold;
-    margin-top: 0.67em;
-    margin-bottom: 0.67em;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 0.3em;
-}
-
-.md-editable-area h2 {
-    font-size: 1.5em;
-    font-weight: bold;
-    margin-top: 0.83em;
-    margin-bottom: 0.83em;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 0.3em;
-}
-
-.md-editable-area h3 {
-    font-size: 1.17em;
-    font-weight: bold;
-    margin-top: 1em;
-    margin-bottom: 1em;
-}
-
-.md-editable-area p {
-    margin-bottom: 1em;
-}
-
-.md-editable-area strong,
-.md-editable-area b {
-    font-weight: bold;
-}
-
-.md-editable-area em,
-.md-editable-area i {
-    font-style: italic;
-}
-
-.md-editable-area s,
-.md-editable-area del {
-    text-decoration: line-through;
-}
-
-.md-editable-area a {
-    color: #0366d6;
-    text-decoration: underline;
-}
-
-.md-editable-area ul,
-.md-editable-area ol {
-    margin-left: 20px;
-    margin-bottom: 1em;
-}
-
-.md-editable-area li {
-    margin-bottom: 0.2em;
-}
-
-.md-editable-area blockquote {
-    border-left: 3px solid #007bff;
-    margin-left: 0;
-    padding-left: 1em;
-    color: #555;
-    font-style: italic;
-    margin-bottom: 1em;
-}
-
-.md-editable-area blockquote p {
-    margin-bottom: 0.5em;
-}
-
-.md-editable-area pre {
-    background-color: #f0f0f0;
-    padding: 10px;
-    border-radius: 4px;
-    overflow-x: auto;
-    font-family: 'Menlo', 'Consolas', monospace;
-    font-size: 0.9em;
-    margin-bottom: 1em;
-    white-space: pre;
-}
-
-.md-editable-area code {
-    font-family: 'Menlo', 'Consolas', monospace;
-    background-color: #f0f0f0;
-    padding: 0.1em 0.3em;
-    border-radius: 3px;
-}
-
-.md-editable-area pre code {
-    background-color: transparent;
-    padding: 0;
-    font-size: inherit;
-}
-
-.md-editable-area hr {
-    margin-top: 1em;
-    margin-bottom: 1em;
-    border: 0;
-    border-top: 1px solid #eee;
-}
-
-.md-editable-area table {
-    border-collapse: collapse;
-    width: 100%;
-    margin-bottom: 1em;
-    border: 1px solid #ddd;
-}
-
-.md-editable-area th,
-.md-editable-area td {
-    border: 1px solid #ddd;
-    padding: 8px 10px;
-    text-align: left;
-    min-width: 50px;
-}
-
-.md-editable-area th {
-    background-color: #f7f7f7;
-    font-weight: bold;
-}
-
-.md-editable-area td:empty::before,
-.md-editable-area th:empty::before {
-    content: "\200B";
-}
 
 .md-markdown-editor-container {
     display: flex;
@@ -219,12 +93,12 @@
     border-right: 1px solid #ddd;
     overflow: hidden;
     box-sizing: border-box;
+    line-height: 1.5em;
 }
 
 .md-markdown-textarea-wrapper {
     flex-grow: 1;
     position: relative;
-    height: 100%;
     overflow: hidden;
 }
 
@@ -232,7 +106,8 @@
     height: 100%;
     width: 100%;
     padding: 15px;
-    border: none;
+    margin: 8px;
+    border: 1px solid black;
     outline: none;
     resize: none;
     background-color: transparent;
@@ -240,6 +115,14 @@
     font-family: inherit;
     box-sizing: border-box;
     overflow-y: auto;
+    line-height: 1.5em;
+    /*padding-left: 0;*/
+    /* prevents word wrap in the markdown editor */
+    /*
+    white-space: nowrap;
+    overflow-wrap: normal;
+    overflow-x: scroll;
+    */
 }
 
 
