@@ -65,6 +65,4 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("Updated content:", markdownContent);
         }
     });
-    console.log("(frame) editor loaded");
-    console.log("(frame) ", editor.getValue());
 });
